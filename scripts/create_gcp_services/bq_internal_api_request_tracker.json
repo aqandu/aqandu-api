@@ -1,0 +1,33 @@
+{
+    "schema": [{
+            "name": "ServiceName",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": null
+        },
+        {
+            "name": "Time",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE",
+            "description": null
+        },
+        {
+            "name": "RequestKey",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": null
+        },
+        {
+            "name": "Host",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": null
+        },
+        {
+            "name": "URL",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "Full URL including parameters"
+        }
+    ]
+}

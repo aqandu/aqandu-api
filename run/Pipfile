@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+pandas = "*"
+google-cloud-bigquery = "*"
+google-cloud-storage = "*"
+flask = "*"
+flask-cache = "*"
+flask-assets = "*"
+torch = "*"
+gunicorn = "*"
+python-dotenv = "*"
+firebase-admin = "*"
+flask-restful = "*"
+python-dateutil = "*"
+scipy = "*"
+flask-caching = "*"
+matplotlib = "*"
+utm = "*"
+pyyaml = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

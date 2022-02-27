@@ -1,0 +1,8 @@
+config_bucket: "dev-tetrad-resources"
+config_filename: "tetrad_config.yaml"
+area_params_bucket: "dev-tetrad-resources"
+area_params_filename: "area_params.json"
+area_params_update_interval_minutes: 15
+config_update_interval_minutes: 60
+project-id: "tetrad-dev"
+passcode: "7Y9GVMN2XKCA"

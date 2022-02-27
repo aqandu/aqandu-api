@@ -1,0 +1,21 @@
+{
+    "schema": [{
+            "name": "Identifier",
+            "type": "STRING",
+            "mode": "REQUIRED",
+            "description": "User identifier (such as an email address)"
+        },
+        {
+            "name": "Timestamp",
+            "type": "TIMESTAMP",
+            "mode": "REQUIRED",
+            "description": "UTC timestamp that this entry was added"
+        },
+        {
+            "name": "Consumed",
+            "type": "INTEGER",
+            "mode": "REQUIRED",
+            "description": "the amount of quota consumed since last update"
+        }
+    ]
+}

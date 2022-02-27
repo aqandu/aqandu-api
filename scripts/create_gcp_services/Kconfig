@@ -1,0 +1,48 @@
+mainmenu "GCP Project Configuration"
+
+choice NEW_PROJECT_CHOICE
+    bool "New or Existing Project"
+
+    config NEW_PROJECT
+        bool "New Project"
+
+    config EXISTING_PROJECT
+        bool "Existing Project"
+
+endchoice
+
+config PROJECT_NAME
+	string "Project Name"
+
+menu "Services"
+
+    config FIRESTORE
+        bool "Firestore"
+
+        config FIRESTORE_COLLECTION_USERS
+            bool "\"users\" collection"
+            depends on FIRESTORE
+
+    config BIGQUERY
+        bool "BigQuery"
+
+        config BQ_TELEMETRY
+            bool "table: \"telemetry.telemetry\""
+            depends on BIGQUERY
+
+        config BQ_DEVICES
+            bool "table: \"meta.devices\""
+            depends on BIGQUERY
+
+        config BQ_API_QUOTA_HISTORY
+            bool "table: \"internal.api_quota_history\""
+            depends on BIGQUERY
+
+        config BQ_API_REQUEST_TRACKER
+            bool "table: \"internal.api_request_tracker\""
+            depends on BIGQUERY
+
+    config RUN
+        bool "Cloud Run"
+
+endmenu

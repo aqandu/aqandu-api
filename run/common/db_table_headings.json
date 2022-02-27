@@ -1,0 +1,12 @@
+{
+    "time": "Timestamp",
+    "id": "DeviceID",
+    "latitude": "ST_Y(GPS)",
+    "longitude": "ST_X(GPS)",
+    "pm2_5": "PM2_5",
+    "temp": "Temperature",
+    "humidity": "Humidity",
+    "sensorsource": "Source",
+    "sensormodel": "PMSModel",
+    "label": "Label"
+}

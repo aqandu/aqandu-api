@@ -1,0 +1,10 @@
+APP:
+  ENV: prod
+  DEBUG: False
+
+PROJECT:
+  NAME: aqandu-prod
+  ID: aqandu-prod
+  NUMBER: 270645171524
+
+PASSCODE: "7Y9GVMN2XKCA"

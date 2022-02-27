@@ -1,0 +1,51 @@
+{
+    "schema": [{
+            "name": "DeviceID",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "Unique ID of device"
+        },
+        {
+            "name": "Nickname",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "User-defined device nickname"
+        },
+        {
+            "name": "Label",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "Generally a city label (i.e. \"slc_ut\"), but can be whatever dev wants (i.e. \"dev\", \"offline\")"
+        },
+        {
+            "name": "Source",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "Organization source (i.e. \"Tetrad\", \"Purple Air\", \"AQ&U\", \"DAQ\")"
+        },
+        {
+            "name": "OTARequestTimestamp",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE",
+            "description": "Time that user sent an OTA request to device"
+        },
+        {
+            "name": "OTARequestVersion",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "OTA binary version user sent as request to device"
+        },
+        {
+            "name": "ActiveFirmwareVersion",
+            "type": "STRING",
+            "mode": "NULLABLE",
+            "description": "Current active binary version used by the device"
+        },
+        {
+            "name": "AddedManually",
+            "type": "BOOLEAN",
+            "mode": "NULLABLE",
+            "description": "If True, this device was added to this table manually via airu_production/assembly.py. If False or NULL, it was found publishing to telemetry.telemetry and added automatically"
+        }
+    ]
+}
