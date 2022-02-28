@@ -25,7 +25,7 @@ For deploying in Google Cloud Run.
 - Enable Google Cloud Run in the GCP project
 - Set your container name
 ```bash
-    export GCP_CONTAINER="tetrad-api"
+    export GCP_CONTAINER="aqandu-api"
     # export GCP_CONTAINER="tetrad-api-$(git rev-parse HEAD | head -c 6)"
 ```
 - Build the container and store it in gcr.io to fetch later for deployment
@@ -34,5 +34,5 @@ gcloud builds submit --tag gcr.io/$(gcloud config get-value project)/${GCP_CONTA
 ```
 - Deploy the container
 ```bash
-gcloud run deploy --image gcr.io/$(gcloud config get-value project)/${GCP_CONTAINER}:latest --region us-central1 --memory 4Gi --allow-unauthenticated --platform managed
+gcloud run deploy --image gcr.io/$(gcloud config get-value project)/${GCP_CONTAINER}:latest --region us-west2 --memory 4Gi --allow-unauthenticated --platform managed
 ```

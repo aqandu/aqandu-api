@@ -10,7 +10,7 @@ import numpy as np
 from common.decorators import processPreRequest
 
 """
-http://localhost:5000/api/getEstimateAtLocation?startTime=2021-09-20T00:00:00Z&endTime=2021-09-20T01:00:00Z&lat=40.74417&lon=-111.866&timeInterval=60
+http://localhost:5000/getEstimateAtLocation?startTime=2021-09-20T00:00:00Z&endTime=2021-09-20T01:00:00Z&lat=40.74417&lon=-111.866&timeInterval=60
 """
 
 arguments = RequestParser()

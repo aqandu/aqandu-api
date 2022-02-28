@@ -13,10 +13,10 @@ import pandas as pd
 from common.decorators import processPreRequest
 
 """
-http://localhost:5000/api/getLiveSensors
-http://localhost:5000/api/getLiveSensors?sensorSource=Tetrad
-http://localhost:5000/api/getLiveSensors?noCorrection=1
-http://localhost:5000/api/getLiveSensors?areaModel=slc_ut
+http://localhost:5000/getLiveSensors
+http://localhost:5000/getLiveSensors?sensorSource=AQ%26U
+http://localhost:5000/getLiveSensors?noCorrection=1
+http://localhost:5000/getLiveSensors?areaModel=slc_ut
 """
 
 arguments = RequestParser()
@@ -126,6 +126,8 @@ class getLiveSensors(Resource):
         query_job = bq_client.query(query)
     
         df = pd.DataFrame([dict(r) for r in query_job.result()])
+        if df.empty:
+            return jsonify({'error':'no data'})
         status_data = [[]]*df.shape[0]
         df["status"] = status_data
         
@@ -147,7 +149,6 @@ class getLiveSensors(Resource):
                     
         if apply_correction:
             # find the mean humidity
-
             if pd.notnull(df["humidity"]).any():
                 mean_humidity = df["humidity"].mean()
             else:
@@ -191,6 +192,9 @@ class getLiveSensors(Resource):
                 })
             )
         
-        return jsonify(sensor_list)
+        response = jsonify(sensor_list)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('')
+        return response
 
             

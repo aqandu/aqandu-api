@@ -10,7 +10,7 @@ import common.jsonutils
 from common.decorators import processPreRequest
 
 '''
-http://127.0.0.1:5000/api/getLocalSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z&lat=40.74515342859894&lon=-111.87190780262274&radius=1000
+http://127.0.0.1:5000/getLocalSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z&lat=40.74515342859894&lon=-111.87190780262274&radius=1000
 '''
 
 arguments = RequestParser()

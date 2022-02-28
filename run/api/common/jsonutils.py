@@ -62,7 +62,7 @@ def parseDateString(datetime_string, dflt_tz_string=None):
 #     return bounding_box_vertices
 
 
-def loadBoundingBox(bbox):
+def bbox_to_vertices(bbox):
     if bbox is None:
         return None
 
@@ -140,6 +140,7 @@ def isQueryInBoundingBox(bounding_box_vertices, query_lat, query_lon):
     if bounding_box_vertices is None:
         return False
     verts = [(0, 0)] * len(bounding_box_vertices)
+    print(bounding_box_vertices)
     for elem in bounding_box_vertices:
         verts[elem[0]] = (elem[2], elem[1])
     # Add first vertex to end of verts so that the path closes properly
@@ -154,7 +155,7 @@ def isQueryInBoundingBox(bounding_box_vertices, query_lat, query_lon):
 def getAreaModelByLocation(area_models, lat=0.0, lon=0.0, string=None):
     if (string == None):
         for key in area_models:
-            if (isQueryInBoundingBox(area_models[key]['bbox'], lat, lon)):
+            if (isQueryInBoundingBox(bbox_to_vertices(area_models[key]['bbox']), lat, lon)):
                 return area_models[key]
     else:
         try:
@@ -166,31 +167,31 @@ def getAreaModelByLocation(area_models, lat=0.0, lon=0.0, string=None):
     return None
 
 
-def buildAreaModelsFromJson(json_data):
-    area_models = {}
-    for key in json_data:
-        this_model = {}
-        this_model['name'] = json_data[key]['Name']
-        if "Default Humidity" in json_data[key]:
-            this_model['defaulthumidity'] = json_data[key]["Default Humidity"]
-        else:
-            this_model['defaulthumidity'] = DEFAULT_DEFAULT_HUMIDITY
-        this_model['timezone'] = json_data[key]['Timezone']
-        # this_model['idstring'] = json_data[key]['ID String']
-        this_model['elevationfile'] = json_data[key]['Elevation File']
-        this_model['note'] = json_data[key]['Note']
-#delay loading elev maps to save memory
-#        this_model['elevationinterpolator'] = buildAreaElevationInterpolator(json_data[key]['Elevation File'])
-        this_model['elevationfile'] = json_data[key]['Elevation File']
-        this_model['bbox'] = loadBoundingBox(json_data[key]['bbox'])
-        this_model['correctionfactors'] = loadCorrectionFactors(json_data[key]['Correction Factors'],json_data[key]['Timezone'])
-        this_model['lengthscales'] = loadLengthScales(json_data[key]['Length Scales'], json_data[key]['Timezone'])
-        if 'Source table map' in json_data[key]:
-            this_model['sourcetablemap'] = json_data[key]['Source table map']
-        # else:
-        #     this_model['sourcetablemap'] = None
-        area_models[key] = this_model
-    return area_models
+# def buildAreaModelsFromJson(json_data):
+#     area_models = {}
+#     for key in json_data:
+#         this_model = {}
+#         this_model['name'] = json_data[key]['Name']
+#         if "Default Humidity" in json_data[key]:
+#             this_model['defaulthumidity'] = json_data[key]["Default Humidity"]
+#         else:
+#             this_model['defaulthumidity'] = DEFAULT_DEFAULT_HUMIDITY
+#         this_model['timezone'] = json_data[key]['Timezone']
+#         # this_model['idstring'] = json_data[key]['ID String']
+#         this_model['elevationfile'] = json_data[key]['Elevation File']
+#         this_model['note'] = json_data[key]['Note']
+# #delay loading elev maps to save memory
+# #        this_model['elevationinterpolator'] = buildAreaElevationInterpolator(json_data[key]['Elevation File'])
+#         this_model['elevationfile'] = json_data[key]['Elevation File']
+#         this_model['bbox'] = loadBoundingBox(json_data[key]['bbox'])
+#         this_model['correctionfactors'] = loadCorrectionFactors(json_data[key]['Correction Factors'],json_data[key]['Timezone'])
+#         this_model['lengthscales'] = loadLengthScales(json_data[key]['Length Scales'], json_data[key]['Timezone'])
+#         if 'Source table map' in json_data[key]:
+#             this_model['sourcetablemap'] = json_data[key]['Source table map']
+#         # else:
+#         #     this_model['sourcetablemap'] = None
+#         area_models[key] = this_model
+#     return area_models
 
 # note this can be very slow -- need 
 def applyCorrectionFactor(factors, data_timestamp, pm2_5, humidity, sensor_type, sensor_source=None, status=False):
@@ -212,21 +213,20 @@ def applyCorrectionFactor(factors, data_timestamp, pm2_5, humidity, sensor_type,
         this_type = sensor_type
     elif "default" in factors:
         this_type = "default"
-    else:
-        print(f"Got bad type in correction factors {sensor_type}")
-        print(factors)
     default_idx = -1
     for i in range(len(factors[this_type])):
-            if factors[this_type][i]['starttime'] <= data_timestamp and factors[this_type][i]['endtime'] > data_timestamp:
-                if not status:
-                    return np.maximum(pm2_5 * factors[this_type][i]['slope'] + humidity*factors[this_type][i]['humidslope']+ factors[this_type][i]['intercept'], 0.0)
-                else:
-                    # print(f"factor type is {factor_type} and case {i}")
-                    # print(factors[factor_type][i])
-                    return np.maximum(pm2_5 * factors[this_type][i]['slope'] + humidity*factors[this_type][i]['humidslope']+ factors[this_type][i]['intercept'], 0.0), factors[this_type][i]['note']
 
-            if factors[this_type][i]['starttime'] == "default":
-                default_idx = i
+        if factors[this_type][i]['starttime'] == "default":
+            default_idx = i
+
+        elif factors[this_type][i]['starttime'] <= data_timestamp and factors[this_type][i]['endtime'] > data_timestamp:
+            if not status:
+                return np.maximum(pm2_5 * factors[this_type][i]['slope'] + humidity*factors[this_type][i]['humidslope']+ factors[this_type][i]['intercept'], 0.0)
+            else:
+                # print(f"factor type is {factor_type} and case {i}")
+                # print(factors[factor_type][i])
+                return np.maximum(pm2_5 * factors[this_type][i]['slope'] + humidity*factors[this_type][i]['humidslope']+ factors[this_type][i]['intercept'], 0.0), factors[this_type][i]['note']
+
     if default_idx >= 0:
         return np.maximum(pm2_5 * factors[this_type][default_idx]['slope'] + humidity*factors[this_type][default_idx]['humidslope']+ factors[this_type][default_idx]['intercept'], 0.0), factors[this_type][default_idx]['note']
     if not status:

@@ -4,6 +4,7 @@ import common.jsonutils
 from google.cloud import bigquery, storage
 import pytz
 import utm
+from flask import jsonify, make_response
 import json
 from matplotlib.path import Path
 import numpy as np
@@ -39,7 +40,6 @@ def dict_nantonull(d):
     for k,v in d.items():
         if isinstance(v, float) and np.isnan(v):
             updated_item[k] = None
-            print(updated_item[k])
         else:
             updated_item[k] = v
     return updated_item 
@@ -288,6 +288,7 @@ def getScalesInTimeRange(scales, start_time, end_time):
 
 
 def interpolateQueryDates(start_datetime, end_datetime, period):
+    print('inside? ')
     query_dates = []
     query_date = start_datetime
     while query_date <= end_datetime:
@@ -408,6 +409,8 @@ def estimateMedianDeviation(start_date, end_date, lat_lo, lat_hi, lon_lo, lon_hi
         return "Invalid API call - check documentation.", 400
 
     median_data = query_job.result()
+    median = 0
+    count = 0
     for row in median_data:
         median = row.median
         count = row.num_sensors
@@ -417,6 +420,7 @@ def estimateMedianDeviation(start_date, end_date, lat_lo, lat_hi, lon_lo, lon_hi
     if query_job.error_result:
         return "Invalid API call - check documentation.", 400
     MAD_data = query_job.result()
+    MAD = 0
     for row in MAD_data:
         MAD = row.median
 
@@ -424,8 +428,12 @@ def estimateMedianDeviation(start_date, end_date, lat_lo, lat_hi, lon_lo, lon_hi
 
 def filterUpperLowerBounds(lat_lo, lat_hi, lon_lo, lon_hi, start_date, end_date, area_model, filter_level = DEFAULT_OUTLIER_LEVEL):
         median, MAD, count = estimateMedianDeviation(start_date, end_date, lat_lo, lat_hi, lon_lo, lon_hi, area_model)
-        lo = max(median - filter_level*MAD, 0.0)
-        hi = min(max(median + filter_level*MAD, MIN_OUTLIER_LEVEL), MAX_ALLOWED_PM2_5)
+        if median == 0:
+            lo = 0
+            hi = 1000
+        else:
+            lo = max(median - filter_level*MAD, 0.0)
+            hi = min(max(median + filter_level*MAD, MIN_OUTLIER_LEVEL), MAX_ALLOWED_PM2_5)
         return lo, hi
 
 def filterUpperLowerBoundsForArea(start_date, end_date, area_model, filter_level = DEFAULT_OUTLIER_LEVEL):
@@ -603,7 +611,7 @@ def computeEstimatesForLocations(query_dates, query_locations, area_model, outli
 
     # step 2, load up length scales from file
 
-    latlon_length_scale, time_length_scale, elevation_length_scale = common.jsonutils.getLengthScalesForTime(area_model['lengthscales'], query_start_datetime)
+    latlon_length_scale, time_length_scale, elevation_length_scale = common.jsonutils.getLengthScalesForTime(area_model['length scales'], query_start_datetime)
     if latlon_length_scale == None:
             return np.full((query_lats.shape[0], query_dates.shape[0]), 0.0), np.full((query_lats.shape[0], query_dates.shape[0]), np.nan), ["Length scale parameter error" for i in range(query_dates.shape[0])]
 
@@ -626,6 +634,9 @@ def computeEstimatesForLocations(query_dates, query_locations, area_model, outli
             query_start_datetime - timedelta(hours=TIME_KERNEL_FACTOR_PADDING*time_length_scale),
             query_end_datetime + timedelta(hours=TIME_KERNEL_FACTOR_PADDING*time_length_scale),
             area_model, outlier_filtering)
+
+    if df.empty:
+        return make_response(jsonify(error='no data'), 400)
 
     # go ahead and replace the humidities in the data, since they won't get reported anyway
     if (apply_correction):

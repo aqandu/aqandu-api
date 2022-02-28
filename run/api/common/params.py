@@ -65,7 +65,7 @@ class PARAMS_HELP_MESSAGES(str, Enum):
     LAT = "must be between -90, 90"
     LON = "must be between -180, 180"
     RADIUS = "radius"
-    TIME = "The datetime to take a single-time estimate map (grid).  Required if start/end are not specified.  This parameter also accepts “time=now” to get an estimate at the current time."
+    TIME = f"{URL_PARAMS.START_TIME} must be in ISO 8601 format (2020-01-01T00:00:00+00)"
     LAT_LO = "Lower bounds of the latitude box that defines the extent of the map."
     LAT_HI = "Upper bounds of the latitude box that defines the extent of the map."
     LON_LO = "Lower bounds of the longitude box that defines the extent of the map."

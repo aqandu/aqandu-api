@@ -201,7 +201,7 @@ class getTimeAggregatedData(Resource):
                         this_humidity = row['HUMIDITY']
                     else:
                         this_humidity = mean_humidity
-                    new_pm2_5, status = common.jsonutils.applyCorrectionFactor(_area_models[row["areamodel"]['correctionfactors']], row["upper"], row["PM2_5"], this_humidity, row["sensormodel"], status=True)
+                    new_pm2_5, status = common.jsonutils.applyCorrectionFactor(_area_models[row["areamodel"]['pm2.5 correction factors']], row["upper"], row["PM2_5"], this_humidity, row["sensormodel"], status=True)
                 else:
                     new_pm2_5 = row["PM2_5"]
                     status = "Not corrected"
@@ -218,7 +218,7 @@ class getTimeAggregatedData(Resource):
                         this_humidity = row['HUMIDITY']
                     else:
                         this_humidity = mean_humidity
-                    new_pm2_5, status = common.jsonutils.applyCorrectionFactor(_area_models[row["areamodel"]]['correctionfactors'], row["upper"], row["PM2_5"], this_humidity, row["sensormodel"], status=True)
+                    new_pm2_5, status = common.jsonutils.applyCorrectionFactor(_area_models[row["areamodel"]]['pm2.5 correction factors'], row["upper"], row["PM2_5"], this_humidity, row["sensormodel"], status=True)
                 else:
                     new_pm2_5 = row["PM2_5"]
                     status = "Not corrected"

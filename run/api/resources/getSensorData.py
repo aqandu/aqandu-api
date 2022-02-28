@@ -5,7 +5,7 @@ from common.params import URL_PARAMS, PARAMS_HELP_MESSAGES, list_param, multi_ar
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser 
 from flask_restful.inputs import datetime_from_iso8601
-from flask import jsonify
+from flask import jsonify, make_response
 import common.utils
 import common.jsonutils
 import json
@@ -14,9 +14,9 @@ import pandas as pd
 from common.decorators import processPreRequest
 
 '''
-http://127.0.0.1:5000/api/getSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z
-http://127.0.0.1:5000/api/getSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z&sensorSource=Tetrad
-http://127.0.0.1:5000/api/getSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z&areaModel=slc_ut
+http://127.0.0.1:5000/getSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z
+http://127.0.0.1:5000/getSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z&sensorSource=Tetrad
+http://127.0.0.1:5000/getSensorData?startTime=2021-09-20T13:00:00Z&endTime=2021-09-20T14:00:00Z&areaModel=slc_ut
 '''
 
 arguments = RequestParser()
@@ -56,19 +56,20 @@ class getSensorData(Resource):
             # this logic adjusts for the two cases, where you have different tables for each source or one table for all sources
             # get all of the sources if you need to
             source_query = ""
-            # if (sensor_source == "all"):
-            #     # easy case, query all tables with no source requirement
-            #     sources = area_model["idstring"]
-            # elif "sourcetablemap" in area_model:
-            #     # if it's organized by table, then get the right table (or nothing)
-            #     if sensor_source in area_model["sourcetablemap"]:
-            #         sources = area_model["sourcetablemap"][sensor_source]
-            #     else:
-            #         sources = None
-            # else:
-            #     # sources are not organized by table.  Get all the tables and add a boolean to check for the source
-            #     # sources = area_model["idstring"]
-            #     source_query = f" AND sensorsource = @sensor_source"
+            if (sensor_source == "all"):
+                # easy case, query all tables with no source requirement
+                # sources = area_model["idstring"]
+                pass
+            elif "sourcetablemap" in area_model:
+                # if it's organized by table, then get the right table (or nothing)
+                if sensor_source in area_model["sourcetablemap"]:
+                    sources = area_model["sourcetablemap"][sensor_source]
+                else:
+                    sources = None
+            else:
+                # sources are not organized by table.  Get all the tables and add a boolean to check for the source
+                # sources = area_model["idstring"]
+                source_query = f" AND sensorsource = @sensor_source"
 
             # area_id_string = "TETRAD_TABLE_ID" always
             # for area_id_string in sources:
@@ -133,6 +134,10 @@ class getSensorData(Resource):
         query_job = bq_client.query(query, job_config=job_config)
         #    rows = query_job.result()
         df = pd.DataFrame([dict(r) for r in query_job.result()])
+
+        if df.empty:
+            return make_response(jsonify(error='no data'), 400)
+
         print(f'Done querying... Query took {int(time.time() - a)} seconds and returned {len(df)} rows')
         status_data = ["No correction"]*df.shape[0]
         df["status"] = status_data
@@ -155,7 +160,7 @@ class getSensorData(Resource):
                 else:
                     this_humidity = datum['humidity']
                 df.at[idx, 'pm2_5'], df.at[idx, 'status'] = common.jsonutils.applyCorrectionFactor(
-                    factors=_area_models[datum["area_model"]]['correctionfactors'], 
+                    factors=_area_models[datum["area_model"]]['pm2.5 correction factors'], 
                     data_timestamp=datum['time'], 
                     pm2_5=datum['pm2_5'], 
                     humidity = this_humidity,

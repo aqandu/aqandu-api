@@ -17,7 +17,7 @@ kc_mo:      latHi=39.196299999999994&latLo=38.885600000000004&lonHi=-94.47070000
 chatt_tn:   latHi=35.0899&latLo=34.9853&lonHi=-85.2101&lonLo=-85.37729999999999
 pv_ma:      latHi=42.2405&latLo=42.0615&lonHi=-72.4681&lonLo=-72.6643
 
-http://localhost:5000/api/getEstimateMap?latSize=5&lonSize=5&time=2021-09-23T00:00:00Z&latHi=40.8206&latLo=40.481700000000004&lonHi=-111.7616&lonLo=-112.15939999999999
+http://localhost:5000/getEstimateMap?latSize=5&lonSize=5&time=2021-09-23T00:00:00Z&latHi=40.8206&latLo=40.481700000000004&lonHi=-111.7616&lonLo=-112.15939999999999
 '''
 arguments = RequestParser()
 arguments.add_argument(URL_PARAMS.LAT_HI,        type=float,                 help=PARAMS_HELP_MESSAGES.LAT_HI,           required=True)

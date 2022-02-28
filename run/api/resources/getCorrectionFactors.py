@@ -25,14 +25,17 @@ class getCorrectionFactors(Resource):
         all_factors = {}
         for area in areas:
             area_model = _area_models[area]
-            factors = area_model['correctionfactors']
+            factors = area_model['pm2.5 correction factors']
 
             if time != None:
                 area_factors = {}
                 this_time = time
                 for this_type in factors:
                     for i in range(len(factors[this_type])):
-                        if (factors[this_type][i]['starttime'] <= this_time and factors[this_type][i]['endtime'] > this_time) or (factors[this_type][i]['starttime'] == "default"):
+                        if isinstance(factors[this_type][i]['starttime'], str) and (factors[this_type][i]['starttime'] == "default"):
+                            area_factors[this_type] = factors[this_type][i]
+                            break
+                        if (factors[this_type][i]['starttime'] <= this_time < factors[this_type][i]['endtime']):
                             area_factors[this_type] = factors[this_type][i]
                             break
                 all_factors[area] = area_factors

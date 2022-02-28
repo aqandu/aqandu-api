@@ -1,4 +1,5 @@
 from flask import Flask 
+from flask_cors import CORS
 from flask_restful import Api
 
 from resources.getSensorData import getSensorData
@@ -24,6 +25,8 @@ from resources.Documentation import Documentation
 
 app = Flask(__name__)
 api = Api(app)
+app.config['CORS_HEADERS'] = "Content-Type"
+CORS(app)
 
 api.add_resource(getSensorData,          '/getSensorData')
 api.add_resource(getTimeAggregatedData,  '/getTimeAggregatedData')
@@ -47,4 +50,6 @@ api.add_resource(nickname,          '/limited/nickname')
 api.add_resource(Documentation, '/docs')
 
 if __name__ == '__main__':
+    import os
+    os.environ['FLASK_ENV'] = 'development'
     app.run(host='127.0.0.1', port=8080, debug=True)

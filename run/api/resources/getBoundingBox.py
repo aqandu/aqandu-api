@@ -1,7 +1,7 @@
 from common.params import URL_PARAMS, PARAMS_HELP_MESSAGES, multi_area
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser 
-from flask import jsonify
+from flask import jsonify, make_response
 import common.utils
 import common.jsonutils
 
@@ -23,17 +23,8 @@ class getBoundingBox(Resource):
         for area in areas:
             try:
                 info = _area_models[area]
-                N = info['boundingbox'][0][1]
-                S = info['boundingbox'][2][1]
-                E = info['boundingbox'][1][2]
-                W = info['boundingbox'][0][2]
-                bboxes[area] = {
-                    "North": N,
-                    "South": S,
-                    "East": E,
-                    "West": W
-                }
+                bboxes[area] = info['bbox']
             except Exception as e:
-                return f"Trouble: {repr(e)}", 400
+                return make_response(jsonify(error=str(e)), 400)
 
-        return jsonify(bboxes) 
+        return jsonify(bboxes)
