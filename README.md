@@ -8,6 +8,25 @@ We use [pipenv](https://pipenv.org) as our python package dependency resolver fo
 pipenv install --no-lock
 ```
 
+## functions
+Google Cloud Functions
+
+### airnow_connector
+Connector to the AirNow API where DAQ/EPA sensors are hosted. This runs every hour. 
+
+### purpleair_connector
+Connector to PurpleAir. This runs every 5 minutes. 
+
+## run
+Google Cloud Run - Docker containers 
+
+## api
+the backend api 
+
+## website
+the frontent website. 
+
+
 ## scripts
 
 ### create_gcp_services
